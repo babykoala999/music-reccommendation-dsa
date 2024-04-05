@@ -7,6 +7,8 @@ public class MusicRecommendationSystem {
     private Map<String, List<String>> userFeedback; // Map to store user feedback
     private MusicCatalog musicCatalog; // Music catalog reference
 
+    static Scanner sc = new Scanner(System.in);
+    
     public MusicRecommendationSystem() {
         this.userPreferences = new HashMap<>();
         this.userFeedback = new HashMap<>();
@@ -102,6 +104,24 @@ public class MusicRecommendationSystem {
     public List<String> getFeedback(String username) {
         return userFeedback.getOrDefault(username, Collections.emptyList());
     }
+    
+    public void registerUser() {
+        System.out.println("Enter a username:");
+        String username = sc.nextLine();
+        System.out.println("Enter a password:");
+        String password = sc.nextLine();
+
+        List<String> preferences = new ArrayList<>();
+        System.out.println("Enter your genre preferences (comma-separated):");
+        String genreInput = sc.nextLine();
+        List<String> genres = Arrays.asList(genreInput.split(","));
+        for (String genre : genres) {
+            preferences.add(genre.trim());
+        }
+        addUserPreferences(username, preferences);
+        registerUser(username, password);       
+        System.out.println("User registered successfully!");
+    }
 
     public static void main(String[] args) {
         MusicRecommendationSystem recommendationSystem = new MusicRecommendationSystem();
@@ -110,7 +130,11 @@ public class MusicRecommendationSystem {
         recommendationSystem.registerUser("User1", "password1");
         recommendationSystem.registerUser("User2", "password2");
         recommendationSystem.registerUser("User3", "password3");
-
+        // Sample user preferences
+        recommendationSystem.addUserPreferences("User1", Arrays.asList("Rock", "Pop"));
+        recommendationSystem.addUserPreferences("User2", Arrays.asList("Pop", "Hip Hop"));
+        recommendationSystem.addUserPreferences("User3", Arrays.asList("Jazz", "Blues"));
+        
         // Sample music catalog (song, genres)
         MusicCatalog catalog = new MusicCatalog();
         catalog.addSong(new Song("Believer", "Imagine Dragons", Arrays.asList("Rock", "Alternative")));
@@ -143,16 +167,15 @@ public class MusicRecommendationSystem {
         catalog.addSong(new Song("Aankh Marey", "Neha Kakkar & Mika Singh", Arrays.asList("Pop", "Bollywood")));
         catalog.addSong(new Song("Laung Laachi", "Mannat Noor", Arrays.asList("Pop", "Bollywood")));
         catalog.addSong(new Song("Duniyaa", "Akhil & Dhvani Bhanushali", Arrays.asList("Pop", "Bollywood")));
+
+        recommendationSystem.registerUser();
         
-        // Sample user preferences
-        recommendationSystem.addUserPreferences("User1", Arrays.asList("Rock", "Pop"));
-        recommendationSystem.addUserPreferences("User2", Arrays.asList("Pop", "Hip Hop"));
-        recommendationSystem.addUserPreferences("User3", Arrays.asList("Jazz", "Blues"));
-        // Add more users with preferences as needed
+        System.out.println("Enter your username:");
+        String username = sc.nextLine();
+        System.out.println("Enter your password:");
+        String password = sc.nextLine();
 
         // Authenticate users and recommend songs
-        String username = "User1";
-        String password = "password1";
         if (recommendationSystem.authenticateUser(username, password)) {
             List<String> recommendedSongs = recommendationSystem.recommendSongs(username, catalog);
             System.out.println("Recommended songs for " + username + ": " + recommendedSongs);
@@ -160,5 +183,8 @@ public class MusicRecommendationSystem {
         } else {
             System.out.println("Authentication failed for " + username);
         }
+
+        // Close scanner
+        sc.close();
     }
 }

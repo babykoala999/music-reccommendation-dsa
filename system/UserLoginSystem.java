@@ -6,7 +6,6 @@ private static Map<String, String> users = new HashMap<>(); // Map to store user
     // Method to register a new user
     public static void registerUser(String username, String password) {
         users.put(username, password);
-        System.out.println("User registered successfully!");
     }
     
     // Method to check if a username exists
