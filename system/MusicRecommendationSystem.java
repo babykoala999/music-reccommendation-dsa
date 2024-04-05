@@ -4,14 +4,12 @@ import java.util.*;
 
 public class MusicRecommendationSystem {
     private Map<String, List<String>> userPreferences; // Map to store user preferences
-    private Map<String, List<String>> userFeedback; // Map to store user feedback
     private MusicCatalog musicCatalog; // Music catalog reference
 
     static Scanner sc = new Scanner(System.in);
     
     public MusicRecommendationSystem() {
         this.userPreferences = new HashMap<>();
-        this.userFeedback = new HashMap<>();
         this.musicCatalog = new MusicCatalog();
     }
 
@@ -94,18 +92,9 @@ public class MusicRecommendationSystem {
     public boolean authenticateUser(String username, String password) {
         return UserLoginSystem.validateLogin(username, password);
     }
-
-    // Method to provide feedback on recommended songs
-    public void provideFeedback(String username, String song, String feedback) {
-        userFeedback.computeIfAbsent(username, k -> new ArrayList<>()).add(song + ": " + feedback);
-    }
-
-    // Method to get feedback for a user
-    public List<String> getFeedback(String username) {
-        return userFeedback.getOrDefault(username, Collections.emptyList());
-    }
     
     public void registerUser() {
+    	System.out.println("Registration");
         System.out.println("Enter a username:");
         String username = sc.nextLine();
         System.out.println("Enter a password:");
@@ -168,22 +157,36 @@ public class MusicRecommendationSystem {
         catalog.addSong(new Song("Laung Laachi", "Mannat Noor", Arrays.asList("Pop", "Bollywood")));
         catalog.addSong(new Song("Duniyaa", "Akhil & Dhvani Bhanushali", Arrays.asList("Pop", "Bollywood")));
 
-        recommendationSystem.registerUser();
-        
-        System.out.println("Enter your username:");
-        String username = sc.nextLine();
-        System.out.println("Enter your password:");
-        String password = sc.nextLine();
 
-        // Authenticate users and recommend songs
-        if (recommendationSystem.authenticateUser(username, password)) {
-            List<String> recommendedSongs = recommendationSystem.recommendSongs(username, catalog);
-            System.out.println("Recommended songs for " + username + ": " + recommendedSongs);
+        int choice;
+        outer:
+        while(true) {
+        	System.out.print("\nMenu:\n0.Exit\n1.New User Registration\n2.User Login\nenter choice:");
+        	choice=sc.nextInt();
+        	switch(choice) {
+        	case 0:
+        		System.out.println("Exiting...");
+        		break outer;
+        	case 1:
+                recommendationSystem.registerUser();
+                break;
+        	case 2:
+                System.out.println("\nLogin");
+                System.out.print("Enter your username:");
+                String username = sc.nextLine();
+                System.out.print("Enter your password:");
+                String password = sc.nextLine();
+               
+        		if (recommendationSystem.authenticateUser(username, password)) {
+                    List<String> recommendedSongs = recommendationSystem.recommendSongs(username, catalog);
+                    System.out.println("Recommended songs for " + username + ": " + recommendedSongs);
 
-        } else {
-            System.out.println("Authentication failed for " + username);
+                } else {
+                    System.out.println("Authentication failed for " + username);
+                }
+        		break;
+        	}
         }
-
         // Close scanner
         sc.close();
     }
