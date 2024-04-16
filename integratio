@@ -1,0 +1,111 @@
+import java.util.*;
+
+public class UserLoginSystem {
+    private Map<String, String> users; // Map to store username-password pairs
+
+    public UserLoginSystem() {
+        this.users = new HashMap<>();
+    }
+
+    // Method to register a new user
+    public void registerUser(String username, String password) {
+        users.put(username, password);
+    }
+
+    // Method to authenticate a user
+    public boolean authenticateUser(String username, String password) {
+        return users.containsKey(username) && users.get(username).equals(password);
+    }
+}
+
+public class MusicRecommendationSystem {
+    private UserLoginSystem userLoginSystem; // User login system reference
+    private Map<String, List<String>> userPreferences; // Map to store user preferences
+
+    public MusicRecommendationSystem() {
+        this.userLoginSystem = new UserLoginSystem();
+        this.userPreferences = new HashMap<>();
+    }
+
+    // Method to add user preferences
+    public void addUserPreferences(String username, List<String> preferences) {
+        userPreferences.put(username, preferences);
+    }
+
+    // Method to recommend songs based on user preferences
+    public List<String> recommendSongs(String username, Map<String, List<String>> musicCatalog) {
+        List<String> userPreferences = this.userPreferences.get(username);
+        if (userPreferences == null || userPreferences.isEmpty()) {
+            System.out.println("User has no preferences.");
+            return new ArrayList<>();
+        }
+
+        Map<String, Integer> songScores = new HashMap<>(); // Map to store song scores
+
+        // Iterate over user preferences and music catalog to calculate song scores
+        for (String preference : userPreferences) {
+            for (Map.Entry<String, List<String>> entry : musicCatalog.entrySet()) {
+                String song = entry.getKey();
+                List<String> genres = entry.getValue();
+                if (genres.contains(preference)) {
+                    songScores.put(song, songScores.getOrDefault(song, 0) + 1);
+                }
+            }
+        }
+
+        // Sort songs by score in descending order
+        List<Map.Entry<String, Integer>> sortedSongs = new ArrayList<>(songScores.entrySet());
+        sortedSongs.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+
+        // Extract song names from sorted entries
+        List<String> recommendedSongs = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : sortedSongs) {
+            recommendedSongs.add(entry.getKey());
+        }
+
+        return recommendedSongs;
+    }
+
+    // Method to register a new user
+    public void registerUser(String username, String password) {
+        userLoginSystem.registerUser(username, password);
+    }
+
+    // Method to authenticate a user
+    public boolean authenticateUser(String username, String password) {
+        return userLoginSystem.authenticateUser(username, password);
+    }
+
+    public static void main(String[] args) {
+        MusicRecommendationSystem recommendationSystem = new MusicRecommendationSystem();
+
+        // Register users
+        recommendationSystem.registerUser("User1", "password1");
+        recommendationSystem.registerUser("User2", "password2");
+        recommendationSystem.registerUser("User3", "password3");
+
+        // Sample music catalog (song, genres)
+        Map<String, List<String>> musicCatalog = new HashMap<>();
+        musicCatalog.put("Song1", Arrays.asList("Rock", "Pop"));
+        musicCatalog.put("Song2", Arrays.asList("Pop", "Hip Hop"));
+        musicCatalog.put("Song3", Arrays.asList("Jazz", "Blues"));
+        musicCatalog.put("Song4", Arrays.asList("Rock", "Metal"));
+        // Add more songs to the catalog as needed
+
+        // Sample user preferences
+        recommendationSystem.addUserPreferences("User1", Arrays.asList("Rock", "Pop"));
+        recommendationSystem.addUserPreferences("User2", Arrays.asList("Pop", "Hip Hop"));
+        recommendationSystem.addUserPreferences("User3", Arrays.asList("Jazz", "Blues"));
+        // Add more users with preferences as needed
+
+        // Authenticate users and recommend songs
+        String username = "User1";
+        String password = "password1";
+        if (recommendationSystem.authenticateUser(username, password)) {
+            List<String> recommendedSongs = recommendationSystem.recommendSongs(username, musicCatalog);
+            System.out.println("Recommended songs for " + username + ": " + recommendedSongs);
+        } else {
+            System.out.println("Authentication failed for " + username);
+        }
+    }
+}
